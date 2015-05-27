@@ -1,14 +1,60 @@
-<!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Plak-mockup-template by jmkl</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-  
 
- </head>
- <body>
-   
- </body>
+<head>
+   <style type="text/css">
+       .konten{
+           width: 100%;
+           height: 100%;           
+       }
+       #mcanvas{
+          
+       background: #ddd;
+       }
+       .jsteks:hover{opacity: 1;height: 50%;}
+       .jsteks{
+           height: 20%;
+           z-index: 1;
+           opacity: .2;
+           right: 0;
+           position: absolute;
+           width: 50%;
+           transition: all .3s ease-in;
+       
+       }
+       
+    </style>
+  
+    <title>Hello Woarld</title>
+     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fabric.js/1.5.0/fabric.min.js"></script>
+
+</head>
+<body>
+<button class="save">save plak config file</button>
+ <textarea name="" id="" cols="30" rows="10" class="jsteks"></textarea>
+  <table>
+      <tr>
+         <td>WIDTH</td>
+         <td>HEIGHT</td>
+          <td>LEFT</td>
+          <td>TOP</td>
+      </tr>
+      <tr>
+         <td><input type="number" class="canvw" value="1500"/></td>
+         <td><input type="number" class="canvh" value="1000"/></td>
+          <td class="posx">100</td>
+          <td class="posy">200</td>
+      </tr>
+      
+  </table>
+  <input type="file" id="img_frame">
+     <input type="file" id="img_ss">
+   <div class="konten">
+    
+    <canvas id="mcanvas" width="1000" height="1000"></canvas>
+    </div>
+    
+    <script src="hellocanvas.js"></script>
+</body>
+
 </html>
