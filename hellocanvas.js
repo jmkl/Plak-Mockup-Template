@@ -1,12 +1,21 @@
 var CNVS = $("#mcanvas");
-var FACTOR = 4; /*pembagi*/
+var FACTOR = 5; /*pembagi*/
 var fCanvas = new fabric.Canvas("mcanvas");
 
 var img_ss = null;
 var img_frame = null;
+var img_bf = null;
+var is_w = null;
+var is_h = null;
+var if_w = null;
+var if_h = null;
 
-$(".save").click(function(){
-    var file = new Blob([$('.jsteks').text()],{type:'text/plain'});
+var img_ov_1=null,img_ov_2=null,img_ov_3=null;
+
+$(".save").click(function() {
+    var file = new Blob([$('.jsteks').text()], {
+        type: 'text/plain'
+    });
     var loc = URL.createObjectURL(file);
     var a = document.createElement('a');
     document.body.appendChild(a);
@@ -20,26 +29,31 @@ function handleFRAME(evt) {
     var mfile = evt.target.files[0];
 
     var reader = new FileReader();
-    reader.onload = function (event) {
+    reader.onload = function(event) {
 
         var iPic = new Image();
         iPic.src = event.target.result;
 
 
-        iPic.onload = function () {
+        iPic.onload = function() {
             if (img_frame != null) {
                 fCanvas.remove(img_frame);
             }
-
-
+// canvas.sendBackwards(myObject)
+// canvas.sendToBack(myObject)
+// canvas.bringForward(myObject)
+// canvas.bringToFront(myObject)
+    
             img_frame = new fabric.Image(iPic);
+            if_w = img_frame.getWidth();
+            if_h = img_frame.getHeight();
 
-
-            img_frame.setWidth(img_frame.getWidth() / FACTOR);
-            img_frame.setHeight(img_frame.getHeight() / FACTOR);
+            img_frame.setWidth(if_w / FACTOR);
+            img_frame.setHeight(if_h / FACTOR);
 
             img_frame.set('hasControls', false);
             fCanvas.add(img_frame);
+           
         };
     };
     reader.readAsDataURL(mfile);
@@ -54,12 +68,12 @@ function handleSS(evt) {
     var mfile = evt.target.files[0];
 
     var reader = new FileReader();
-    reader.onload = function (event) {
+    reader.onload = function(event) {
 
         var iPic = new Image();
         iPic.src = event.target.result;
 
-        iPic.onload = function () {
+        iPic.onload = function() {
             if (img_ss != null) {
                 fCanvas.remove(img_ss);
             }
@@ -67,9 +81,11 @@ function handleSS(evt) {
             img_ss = new fabric.Image(iPic);
             ss_x = img_ss.getWidth();
             ss_y = img_ss.getHeight();
+            is_w = ss_x;
+            is_h = ss_y;
             updateJSON();
-            img_ss.setWidth(img_ss.getWidth() / FACTOR);
-            img_ss.setHeight(img_ss.getHeight() / FACTOR);
+            img_ss.setWidth(is_w / FACTOR);
+            img_ss.setHeight(is_h / FACTOR);
 
             img_ss.set('hasControls', false);
             fCanvas.add(img_ss);
@@ -82,7 +98,7 @@ function handleSS(evt) {
 var ssframe = "Redmi 1S";
 var ss_x = 720;
 var ss_y = 1280;
-var background = 1024;
+var background = "null";
 var overlay = overlay;
 var frame = "null";
 var frame_x = 100;
@@ -128,22 +144,25 @@ function updateJSON() {
     $('.jsteks').text(txt);
 }
 
+
 function updateData() {
     if (img_ss != null) {
         var px = img_ss.getLeft();
         var py = img_ss.getTop();
         $('.posx').text(px);
         $('.posy').text(py);
-        pos_ss_x = px * FACTOR;
-        pos_ss_y = py * FACTOR;
+        pos_ss_x = Math.round(px * FACTOR);
+        pos_ss_y = Math.round(py * FACTOR);
+        img_ss.moveTo(2);
     }
-    
-    if(img_frame!=null){
-    
+
+    if (img_frame != null) {
+
         var px_frame = img_frame.getLeft();
         var py_frame = img_frame.getTop();
-        frame_x = px_frame*FACTOR;
-        frame_y = py_frame*FACTOR;
+        frame_x = Math.round(px_frame * FACTOR);
+        frame_y = Math.round(py_frame * FACTOR);
+        img_frame.moveTo(3);
     }
     updateJSON();
 
@@ -166,7 +185,7 @@ function initScale() {
 
 initScale();
 
-$(".canvw").change(function () {
+$(".canvw").change(function() {
     var value = $(this).val();
     fCanvas.setWidth(value / FACTOR);
     fCanvas.calcOffset();
@@ -174,7 +193,7 @@ $(".canvw").change(function () {
     updateJSON();
 
 });
-$(".canvh").change(function () {
+$(".canvh").change(function() {
     var value = $(this).val();
     fCanvas.setHeight(value / FACTOR);
     fCanvas.calcOffset();
@@ -183,14 +202,69 @@ $(".canvh").change(function () {
 
 });
 
-$("#img_ss").change(function (event) {
+$(".scale").change(function() {
+    var value = $(this).val();
+    FACTOR = value;
+    if (img_frame != null) {
+        img_frame.setWidth(if_w / FACTOR);
+        img_frame.setHeight(if_h / FACTOR);
+    }
+    if (img_ss != null) {
+        img_ss.setWidth(is_w / FACTOR);
+        img_ss.setHeight(is_h / FACTOR);
+    }
+    if(img_bg!=null){
+        img_bg.setWidth(bg_width /FACTOR);
+        img_bg.setHeight(bg_height/FACTOR);
+    }
+    $(".canvh").trigger('change');
+    $(".canvw").trigger('change');
+
+
+});
+
+$("#img_bg").change(function(e){
+    var mfile = e.target.files[0];
+    background = mfile.name;
+    updateJSON();
+    var reader = new FileReader();
+    reader.onload = function(event) {
+        var iPic = new Image();
+        iPic.src = event.target.result;
+        iPic.onload = function() {
+            if (img_bg != null) {
+                fCanvas.remove(img_bg);
+            }    
+            img_bg = new fabric.Image(iPic);
+            bg_width = img_bg.getWidth();
+            bg_height = img_bg.getHeight();
+
+            img_bg.setWidth(bg_width / FACTOR);
+            img_bg.setHeight(bg_height / FACTOR);
+
+            img_bg.set('hasControls', false);
+            img_bg.set('selectable',false)
+            fCanvas.add(img_bg);
+            img_bg.moveTo(0);
+           
+        };
+    };
+    reader.readAsDataURL(mfile);
+});
+
+$("#img_ss").change(function(event) {
     var mfile = event.target.files[0];
     frame = mfile.name;
     updateJSON();
     handleFRAME(event);
-    
+
 });
 
-$("#img_frame").change(function (e) {
+$("#img_frame").change(function(e) {
     handleSS(e);
 });
+
+$(".savepreview").click(function(){
+    new fabric.downloadFabric(fCanvas,'plak_preview.jpeg');
+});
+
